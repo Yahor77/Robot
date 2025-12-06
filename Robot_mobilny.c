@@ -12,6 +12,29 @@
 #define R_PWM 12
 #define PWM_WRAP 12500 
 
+#include <stdlib.h> // Dodane dla abs()
+
+void motor_init_pin(uint pin) {
+    gpio_set_function(pin, GPIO_FUNC_PWM);
+    uint slice_num = pwm_gpio_to_slice_num(pin);
+    pwm_set_clkdiv(slice_num, 100.0f); 
+    pwm_set_wrap(slice_num, PWM_WRAP);
+    pwm_set_enabled(slice_num, true);
+}
+
+void set_motor(uint in1, uint in2, uint pwm_pin, int speed) {
+    uint slice_num = pwm_gpio_to_slice_num(pwm_pin);
+    uint channel = pwm_gpio_to_channel(pwm_pin);
+    uint16_t duty = (uint16_t)(abs(speed) * PWM_WRAP / 100);
+
+    if (speed > 0) { gpio_put(in1, 1); gpio_put(in2, 0); }
+    else if (speed < 0) { gpio_put(in1, 0); gpio_put(in2, 1); }
+    else { gpio_put(in1, 0); gpio_put(in2, 0); }
+    pwm_set_chan_level(slice_num, channel, duty);
+}
+
+
+
 int main() {
     stdio_init_all();
     sleep_ms(2000);
@@ -22,7 +45,10 @@ int main() {
     gpio_init(R_IN1); gpio_set_dir(R_IN1, GPIO_OUT);
     gpio_init(R_IN2); gpio_set_dir(R_IN2, GPIO_OUT);
 
-    printf("Piny skonfigurowane.\n");
+    motor_init_pin(L_PWM);
+    motor_init_pin(R_PWM);
+    
     while (true) { sleep_ms(1000); }
+    return 0;
     return 0;
 }
