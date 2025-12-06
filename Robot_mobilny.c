@@ -38,8 +38,6 @@ void set_motor(uint in1, uint in2, uint pwm_pin, int speed) {
 int main() {
     stdio_init_all();
     sleep_ms(2000);
-
-    // Konfiguracja GPIO
     gpio_init(L_IN1); gpio_set_dir(L_IN1, GPIO_OUT);
     gpio_init(L_IN2); gpio_set_dir(L_IN2, GPIO_OUT);
     gpio_init(R_IN1); gpio_set_dir(R_IN1, GPIO_OUT);
