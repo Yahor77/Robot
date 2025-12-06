@@ -12,6 +12,15 @@
 #define R_PWM 12
 #define PWM_WRAP 12500 
 
+#define TRIG_F 18
+#define ECHO_F 19
+#define TRIG_L 20
+#define ECHO_L 21
+#define TRIG_R 22
+#define ECHO_R 26
+
+#define LED_PIN 25
+
 #include <stdlib.h> // Dodane dla abs()
 
 void motor_init_pin(uint pin) {
@@ -33,6 +42,10 @@ void set_motor(uint in1, uint in2, uint pwm_pin, int speed) {
     pwm_set_chan_level(slice_num, channel, duty);
 }
 
+void drive(int left_speed, int right_speed) {
+    set_motor(L_IN1, L_IN2, L_PWM, left_speed);
+    set_motor(R_IN1, R_IN2, R_PWM, right_speed);
+}
 
 
 int main() {
