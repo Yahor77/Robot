@@ -73,7 +73,7 @@ float get_distance(uint trig, uint echo) {
 
     absolute_time_t end_time = get_absolute_time();
     
-    
+
     int64_t pulse_duration = absolute_time_diff_us(start_time, end_time);
     float distance = (float)pulse_duration / 58.0f;
     
@@ -88,15 +88,43 @@ float get_distance(uint trig, uint echo) {
 int main() {
     stdio_init_all();
     sleep_ms(2000);
+
+    gpio_init(LED_PIN);
     gpio_init(L_IN1); gpio_set_dir(L_IN1, GPIO_OUT);
     gpio_init(L_IN2); gpio_set_dir(L_IN2, GPIO_OUT);
     gpio_init(R_IN1); gpio_set_dir(R_IN1, GPIO_OUT);
     gpio_init(R_IN2); gpio_set_dir(R_IN2, GPIO_OUT);
+    gpio_init(TRIG_F); gpio_set_dir(TRIG_F, GPIO_OUT);
+    gpio_init(ECHO_F); gpio_set_dir(ECHO_F, GPIO_IN);
+    gpio_init(TRIG_L); gpio_set_dir(TRIG_L, GPIO_OUT);
+    gpio_init(ECHO_L); gpio_set_dir(ECHO_L, GPIO_IN);
+    gpio_init(TRIG_R); gpio_set_dir(TRIG_R, GPIO_OUT);
+    gpio_init(ECHO_R); gpio_set_dir(ECHO_R, GPIO_IN);
+
 
     motor_init_pin(L_PWM);
     motor_init_pin(R_PWM);
+
+    printf("Robot mobilny - Start systemu\n");
     
-    while (true) { sleep_ms(1000); }
-    return 0;
-    return 0;
+    while (true) {
+        float dist_f = get_distance(TRIG_F, ECHO_F);
+        printf("Dystans front: %.2f cm\n", dist_f);
+        
+        if (dist_f > 0.1 && dist_f < 25){
+            gpio_put(LED_PIN, 1);
+            drive(0, 0);
+            sleep_ms(200);
+            drive(-40, -40);
+            sleep_ms(400);
+            drive(50, -50);
+            sleep_ms(400);
+            drive(0, 0);
+            sleep_ms(200);
+        } else {
+            gpio_put(LED_PIN, 0);
+            drive(35, 35);
+        }
+        sleep_ms(50);
+    }  
 }
