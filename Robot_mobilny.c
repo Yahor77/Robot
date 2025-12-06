@@ -47,6 +47,43 @@ void drive(int left_speed, int right_speed) {
     set_motor(R_IN1, R_IN2, R_PWM, right_speed);
 }
 
+float get_distance(uint trig, uint echo) {
+
+    gpio_put(trig, 0);
+    sleep_us(2);
+    gpio_put(trig, 1);
+    sleep_us(10);
+    gpio_put(trig, 0);
+
+    absolute_time_t timeout_time = make_timeout_time_ms(30);
+
+    while (gpio_get(echo) == 0) {
+        if (absolute_time_diff_us(get_absolute_time(), timeout_time) < 0) {
+            return 0.0;
+        }
+    }
+
+    absolute_time_t start_time = get_absolute_time();
+
+    while (gpio_get(echo) == 1) {
+         if (absolute_time_diff_us(start_time, get_absolute_time()) > 30000){
+            break; 
+         }
+    }
+
+    absolute_time_t end_time = get_absolute_time();
+    
+    
+    int64_t pulse_duration = absolute_time_diff_us(start_time, end_time);
+    float distance = (float)pulse_duration / 58.0f;
+    
+    if (distance > 400.0){
+        return 0.0;
+    }
+
+    return distance;
+}
+
 
 int main() {
     stdio_init_all();
