@@ -86,21 +86,18 @@ float get_distance(uint trig, uint echo) {
 
 
 int main() {
-    stdio_init_all();
-    sleep_ms(2000);
+    
+    stdio_init_all(); // Włączamy komunikację USB (printf)
+    sleep_ms(2000);   // Czekamy aż USB wstanie
 
-    gpio_init(LED_PIN);
-    gpio_init(L_IN1); gpio_set_dir(L_IN1, GPIO_OUT);
-    gpio_init(L_IN2); gpio_set_dir(L_IN2, GPIO_OUT);
-    gpio_init(R_IN1); gpio_set_dir(R_IN1, GPIO_OUT);
-    gpio_init(R_IN2); gpio_set_dir(R_IN2, GPIO_OUT);
-    gpio_init(TRIG_F); gpio_set_dir(TRIG_F, GPIO_OUT);
-    gpio_init(ECHO_F); gpio_set_dir(ECHO_F, GPIO_IN);
-    gpio_init(TRIG_L); gpio_set_dir(TRIG_L, GPIO_OUT);
-    gpio_init(ECHO_L); gpio_set_dir(ECHO_L, GPIO_IN);
-    gpio_init(TRIG_R); gpio_set_dir(TRIG_R, GPIO_OUT);
-    gpio_init(ECHO_R); gpio_set_dir(ECHO_R, GPIO_IN);
+    gpio_init(LED_PIN); gpio_set_dir(LED_PIN, GPIO_OUT);
 
+    // Inicjalizacja GPIO
+    uint out_pins[] = {L_IN1, L_IN2, R_IN1, R_IN2, TRIG_F, TRIG_L, TRIG_R};
+    for(int i=0; i<7; i++) { gpio_init(out_pins[i]); gpio_set_dir(out_pins[i], GPIO_OUT); }
+
+    uint in_pins[] = {ECHO_F, ECHO_L, ECHO_R};
+    for(int i=0; i<3; i++) { gpio_init(in_pins[i]); gpio_set_dir(in_pins[i], GPIO_IN); }
 
     motor_init_pin(L_PWM);
     motor_init_pin(R_PWM);
