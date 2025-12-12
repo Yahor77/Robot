@@ -58,7 +58,9 @@ float get_distance() {
     // 2. Czekaj na start echa (z timeoutem 30ms)
     absolute_time_t timeout_time = make_timeout_time_ms(30);
     while (gpio_get(ECHO_PIN) == 0) {
-        if (absolute_time_diff_us(get_absolute_time(), timeout_time) < 0) return 0.0;
+        if (absolute_time_diff_us(get_absolute_time(), timeout_time) <= 0){
+            return 0.0;
+        }
     }
 
     // 3. Mierz czas trwania echa
@@ -104,6 +106,11 @@ int main() {
         float dist = get_distance();
         printf("Dystans: %.1f cm\n", dist);
 
+        if (dist <= 0 || dist > 400){
+            continue; // BŁĄD POMIARU
+        }
+        
+
         if (dist > 0.1 && dist < 25.0) {
             // PRZESZKODA
             gpio_put(LED_PIN, 1);
@@ -123,6 +130,6 @@ int main() {
             drive(35, 35); 
         }
 
-        sleep_ms(50);
+        sleep_ms(60);
     }
 }
